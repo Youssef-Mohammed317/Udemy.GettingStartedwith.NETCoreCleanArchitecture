@@ -1,1 +1,147 @@
-# GettingStartedwith.NETCoreCleanArchitectureMVC
+Udemy – Getting Started with .NET Clean Architecture (Single Entity Focus)
+
+This project is an implementation of Clean Architecture using .NET, based on the Udemy course
+“Getting Started with .NET Core Clean Architecture”.
+The goal of the project is to deeply understand layered separation, MediatR, and command handling, applied to one entity only for clarity and focus.
+
+Architecture Overview
+
+The solution follows Clean Architecture with 8 layers, ensuring loose coupling, high cohesion, and testability.
+
+1. Domain Layer
+
+Contains core domain entities (models).
+
+Defines repository interfaces (no implementations).
+
+Includes Commands and Command Handlers definitions related to the domain.
+
+Completely independent of infrastructure and frameworks.
+
+2. Domain.Core Layer
+
+Contains the Mediator handler interface abstraction.
+
+Defines Domain Events.
+
+Includes a shared abstract Command base class used across the system.
+
+Acts as the core communication contract between layers.
+
+3. Application Layer
+
+Contains application logic only (no infrastructure concerns).
+
+Includes:
+
+Services (interfaces & implementations).
+
+DTOs / ViewModels.
+
+Mapping logic between ViewModels, Commands, and domain models.
+
+Responsible for orchestrating use cases and business workflows.
+
+4. Infrastructure.Data Layer
+
+Contains DbContext and Entity Framework migrations.
+
+Implements repository interfaces defined in the Domain layer.
+
+Handles all database-related operations using EF Core.
+
+5. Infrastructure.Bus Layer
+
+Contains the implementation of the Mediator handler.
+
+Responsible for sending commands to MediatR and dispatching them to the correct handlers.
+
+Acts as the messaging bridge between Application and Domain logic.
+
+6. Infrastructure.IoC Layer
+
+Centralized dependency injection container.
+
+Registers:
+
+DbContext
+
+Repositories
+
+Services
+
+Commands & Command Handlers
+
+MediatR
+
+AutoMapper
+
+Ensures clean startup configuration and dependency resolution.
+
+7. API Layer
+
+Contains thin controllers (no business logic).
+
+Exposes REST endpoints.
+
+Delegates all work to the Application layer.
+
+Program.cs configures:
+
+EF Core connection
+
+MediatR
+
+Swagger
+
+Dependency Injection
+
+8. MVC (UI) Layer
+
+Acts as a client application to consume and test the API.
+
+Contains:
+
+MVC Controllers
+
+Razor Views
+
+Focused on UI rendering and user interaction only.
+
+ASP.NET Identity is scaffolded here, so Identity and its DbContext live in the MVC project.
+
+This was done intentionally to keep the Clean Architecture flow focused on Mediator and Commands.
+
+Request Flow (Create Entity Example)
+
+User sends a request from the MVC UI.
+
+MVC controller calls the API endpoint.
+
+API controller calls the Application Service.
+
+The service maps the ViewModel (DTO) to a Command object
+(CreateEntityCommand) using a constructor to enforce required data.
+
+The command is sent through the Bus layer, which forwards it to MediatR.
+
+MediatR resolves the correct
+IRequestHandler<CreateEntityCommand>.
+
+The command handler:
+
+Maps the command data to a domain entity (manual mapping).
+
+Uses the repository to persist data.
+
+Saves changes to the database.
+
+Control returns back through the layers to the UI.
+
+Notes
+Mediator pattern is the main focus of this project.
+
+Identity is scaffolded only for authentication support and not part of the Clean Architecture flow.
+
+A testing video is included to demonstrate the end-to-end request lifecycle.
+
